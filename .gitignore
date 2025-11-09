@@ -1,0 +1,20 @@
+﻿# Node / React
+stream24/frontend/node_modules/
+stream24/frontend/build/
+stream24/frontend/dist/
+stream24/frontend/.env
+
+# Java / Backend
+stream24/backend/target/
+stream24/backend/.env
+stream24/backend/*.log
+
+# OS / Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+
+# Git backups
+.git_backup/
