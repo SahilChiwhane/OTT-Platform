@@ -1,4 +1,4 @@
-﻿# Node / React
+﻿# Project-specific
 stream24/frontend/node_modules/
 stream24/frontend/build/
 stream24/frontend/dist/
@@ -18,3 +18,24 @@ Thumbs.db
 
 # Git backups
 .git_backup/
+
+# node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env variations
+.env
+.env.local
+.env.*.local
+
+# build outputs
+/build
+/dist
+
+# misc caches / reports
+coverage/
+.cache/
+*.log
+.eslintcache

@@ -58,10 +58,16 @@ const HomeNav = () => {
     lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
   };
 
+  // useEffect(() => {
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, []);
+
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const onScroll = () => handleScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [handleScroll]);
 
   return (
     <nav
@@ -117,6 +123,10 @@ const HomeNav = () => {
           >
             Sign In
           </Link>
+          <Link to="/watchlist" className="hover:text-white">
+            Watchlist
+          </Link>
+
         </div>
       </div>
     </nav>

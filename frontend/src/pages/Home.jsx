@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React from 'react';
 import HomeNav from '../components/HomeNav';
 import Hero from '../components/Hero';
@@ -16,7 +17,7 @@ const Home = () => {
       <StreamExp />
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

@@ -1,27 +1,29 @@
+// src/pages/Movies.jsx
 import React from 'react';
 import Sidebar from '../components/Sidebar';
 import requests from '../assets/Requests';
+import Carousel from '../components/Carousel';
 import Main from '../components/Main';
-import Carousal from '../components/Carousal';
 import Footer from '../components/Footer';
 
 const Movies = () => {
   return (
-    <div>
-        <div className='h-screen bg-black'>
-            <div className='h-[100%] flex'>
-                <Sidebar />
-                <div className='w-[100%] justify-around overflow-y-auto'>
-                    <Main />
-                    <Carousal rowId='1' title='Top Airing...' fetchURL={requests.requestTrending} />
-                    <Carousal rowId='2' title='Top Rated...' fetchURL={requests.requestTopRated} />
-                    <Carousal rowId='3' title='Upcoming...' fetchURL={requests.requestUpcoming} />
-                    <Footer />
-                </div>
-            </div>
-        </div>
-    </div>
-  )
-}
+    <div className="h-screen bg-black">
+      <div className="h-[100%] flex">
+        <Sidebar />
+        <div className="w-[100%] justify-around overflow-y-auto">
+          <Main />
 
-export default Movies
+          {/* Use the same Carousel component as Home */}
+          <Carousel title="Top Airing..." fetchUrl={requests.requestTrending} />
+          <Carousel title="Top Rated..." fetchUrl={requests.requestTopRated} />
+          <Carousel title="Upcoming..." fetchUrl={requests.requestUpcoming} />
+
+          <Footer />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Movies;
