@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import requests from '../assets/Requests';
+import requests from '../assets/requests';
 
 const ShowsMain = () => {
     const [shows, setShows] = useState([]);

@@ -161,7 +161,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '../routes/paths';
-import requests from '../assets/Requests';
+import requests from '../assets/requests';
 
 const Main = () => {
   const [movie, setMovie] = useState(null);

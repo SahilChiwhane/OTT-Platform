@@ -12,9 +12,9 @@ const TvSeries = lazy(() => import("../pages/TvSeries"));
 const Anime = lazy(() => import("../pages/Anime"));
 const SignIn = lazy(() => import("../pages/SignIn"));
 const SignUp = lazy(() => import("../pages/SignUp"));
-// Add Watch and NotFound routes
 const Watch = lazy(() => import("../pages/Watch"));
 const NotFound = lazy(() => import("../pages/NotFound"));
+const Search = lazy(() => import("../pages/Search"));
 
 const AppRoutes = () => {
   return (
@@ -27,10 +27,10 @@ const AppRoutes = () => {
         <Route path="/login" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/browse" element={<Browse />} />
-
-        {/* Watch detail route used by MovieCarousal (navigate('/watch/:id')) */}
         <Route path="/watch/:id" element={<Watch />} />
         <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/search" element={<Search />} />
 
         {/* 404 fallback */}
         <Route path="*" element={<NotFound />} />

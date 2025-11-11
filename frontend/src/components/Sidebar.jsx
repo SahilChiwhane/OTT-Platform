@@ -1,60 +1,157 @@
-import React from 'react';
-import { useLocation, Link } from 'react-router-dom'; // Import Link for navigation
-import { assets } from '../assets/assets';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  FaSearch,
+  FaFilm,
+  FaTv,
+  FaListAlt,
+  FaCog,
+  FaQuestionCircle,
+  FaUserCircle,
+  FaChevronLeft,
+  FaChevronRight
+} from 'react-icons/fa';
 
 const Sidebar = () => {
-    const location = useLocation(); // Get the current route location
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
+  const [hovering, setHovering] = useState(false);
 
-    return (
-        <div className='w-[35%] sidebar'>
-            <div className='sidebar--BG'>
-                <div className='sidebar--Menu sidebar--Brand hover:bg-[#121212]'>
-                    <img className='w-9' src={assets.logo} alt='logo' />
-                    <p className='font-bold text-[18px] text-base text-[#0C76D8] tracking-widest'>Stream24</p>
-                </div>
-                <Link to='/' className={`sidebar--Menu ${location.pathname === '/' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.home_icon} alt='home' />
-                    <p className='sidebar--Font'>Home</p>
-                </Link>
-                {/* <Link to='/discover' className={`sidebar--Menu ${location.pathname === '/discover' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.explore_icon} alt='discover' />
-                    <p className='sidebar--Font'>Discover</p>
-                </Link> */}
-                <div className={`sidebar--Menu`}>
-                    <img className='sidebar--icon' src={assets.search_icon} alt='search' />
-                    <p className='sidebar--Font'>Search</p>
-                </div>
-                <Link to='/movies' className={`sidebar--Menu ${location.pathname === '/movies' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.movies_icon} alt='movies' />
-                    <p className={`sidebar--Font `}>Movies</p>
-                </Link>
-                <Link to='/tvshows' className={`sidebar--Menu ${location.pathname === '/tvshows' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.tv_icon} alt='tv shows' />
-                    <p className='sidebar--Font'>TV Shows</p>
-                </Link>
-                <Link to='/anime' className={`sidebar--Menu ${location.pathname === '/anime' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.anime_icon} alt='anime' />
-                    <p className='sidebar--Font'>Anime</p>
-                </Link>
-                {/* <Link to='/trending' className={`sidebar--Menu ${location.pathname === '/trending' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.trending_icon} alt='trending' />
-                    <p className='sidebar--Font'>Trending</p>
-                </Link> */}
-                <Link to='/settings' className={`sidebar--Menu ${location.pathname === '/settings' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.settings_icon} alt='settings' />
-                    <p className='sidebar--Font'>Settings</p>
-                </Link>
-                <Link to='/help' className={`sidebar--Menu ${location.pathname === '/help' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.help_icon} alt='help' />
-                    <p className='sidebar--Font'>Help</p>
-                </Link>
-                <Link to='/profile' className={`sidebar--Menu m-3 ml-0 mb-0 pl-0 ${location.pathname === '/profile' ? 'border-[#4b4b4b] border-r-4 bg-[#1c1c1c]' : 'bg-[#121212]'}`}>
-                    <img className='sidebar--icon' src={assets.profile_icon} alt='profile' />
-                    <p className='sidebar--Font'>Profile</p>
-                </Link>
-            </div>
-        </div>
+  const items = [
+    { key: 'movies', label: 'Movies', to: '/movies', icon: <FaFilm /> },
+    { key: 'tvshows', label: 'TV Shows', to: '/tvshows', icon: <FaTv /> },
+    { key: 'anime', label: 'Anime', to: '/anime', icon: <FaFilm /> },
+    { key: 'search', label: 'Search', to: null, icon: <FaSearch />, action: () => navigate('/search') },
+    { key: 'wishlist', label: 'Wishlist', to: '/watchlist', icon: <FaListAlt /> },
+    { key: 'settings', label: 'Settings', to: '/settings', icon: <FaCog /> },
+    { key: 'help', label: 'Help', to: '/help', icon: <FaQuestionCircle /> },
+  ];
+
+  const isRouteActive = (to) => {
+    if (!to) return false;
+    return location.pathname === to || location.pathname.startsWith(`${to}/`);
+  };
+
+  const renderItem = (item) => {
+    const active = isRouteActive(item.to);
+    const base = `flex items-center gap-3 p-3 rounded-md transition-all duration-200 ease-in-out relative`;
+    const activeClasses = active ? `bg-[#1c1c1c] text-white` : `text-gray-300 hover:bg-[#1c1c1c]`;
+
+    const content = (
+      <>
+        <span className="text-lg">{item.icon}</span>
+        {!collapsed && <span className="sidebar--Font">{item.label}</span>}
+
+        {/* Tooltip shown only when collapsed */}
+        {collapsed && (
+          <span className="absolute left-full ml-3 whitespace-nowrap bg-[#1c1c1c] text-white text-sm px-2 py-1 rounded opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none z-50">
+            {item.label}
+          </span>
+        )}
+      </>
     );
+
+    return item.action ? (
+      <div
+        key={item.key}
+        onClick={item.action}
+        className={`${base} ${activeClasses} cursor-pointer ${collapsed ? 'justify-center group' : ''}`}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') item.action(); }}
+      >
+        {content}
+      </div>
+    ) : (
+      <Link
+        key={item.key}
+        to={item.to}
+        className={`${base} ${activeClasses} ${collapsed ? 'justify-center group' : ''}`}
+        aria-current={active ? 'page' : undefined}
+      >
+        {content}
+      </Link>
+    );
+  };
+
+  return (
+    <aside
+      className={`bg-[#121212] h-full flex flex-col transition-all duration-400 ease-in-out ${collapsed ? 'w-15' : 'w-60'}`}
+      onMouseEnter={() => { if (collapsed) setHovering(true); }}
+      onMouseLeave={() => { if (collapsed) setHovering(false); }}
+    >
+      {/* HEADER */}
+      <div className="flex items-center justify-between p-3">
+        {/* LEFT SLOT: fixed size and position-relative; we stack logo + expand button here */}
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 relative flex items-center justify-center">
+            {/* Logo (always present visually unless replaced by button via opacity/scale) */}
+            <div
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-250 ease-in-out transform
+                ${collapsed && hovering ? 'opacity-0 scale-90 pointer-events-none' : 'opacity-100 scale-100'}
+              `}
+              aria-hidden={collapsed && hovering}
+            >
+              <div className="w-10 h-10 bg-blue-600 flex items-center justify-center rounded-full text-white font-bold select-none">
+                S
+              </div>
+            </div>
+
+            {/* Expand button (only visible when collapsed+hovering) - occupies same spot */}
+            <button
+              onClick={() => setCollapsed(false)}
+              aria-label="Expand sidebar"
+              className={`absolute inset-0 m-auto w-10 h-10 flex items-center justify-center rounded-full focus:outline-none transition-all duration-250 ease-in-out transform
+                ${collapsed && hovering ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}
+              `}
+            >
+              <FaChevronRight size={18} className="text-gray-300" />
+            </button>
+          </div>
+
+          {/* Site name only when expanded */}
+          {!collapsed && (
+            <span className="text-white font-bold text-lg select-none">Stream24</span>
+          )}
+        </div>
+
+        {/* When expanded show collapse button on right aligned with same vertical center */}
+        {!collapsed && (
+          <div className="w-12 h-12 flex items-center justify-center">
+            <button
+              onClick={() => setCollapsed(true)}
+              aria-label="Collapse sidebar"
+              className="w-10 h-10 flex items-center justify-center rounded-full focus:outline-none transition-transform duration-200 hover:scale-105"
+            >
+              <FaChevronLeft size={18} className="text-gray-300" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* NAV */}
+      <nav className="flex-1 flex flex-col gap-1 mt-2">{items.map(renderItem)}</nav>
+
+      {/* ACCOUNT */}
+      <div className="mt-auto mb-4">
+        <div
+          onClick={() => navigate('/profile')}
+          className={`flex items-center gap-3 p-3 text-gray-300 hover:bg-[#1c1c1c] rounded-md cursor-pointer transition-all duration-200 ease-in-out relative ${collapsed ? 'justify-center group' : ''}`}
+        >
+          <FaUserCircle className="text-lg" />
+          {!collapsed && <span className="sidebar--Font">Account</span>}
+
+          {/* Tooltip for account */}
+          {collapsed && (
+            <span className="absolute left-full ml-3 whitespace-nowrap bg-[#1c1c1c] text-white text-sm px-2 py-1 rounded opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none z-50">
+              Account
+            </span>
+          )}
+        </div>
+      </div>
+    </aside>
+  );
 };
 
 export default Sidebar;

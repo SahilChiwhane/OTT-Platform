@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
-import requests from '../assets/Requests';
+import requests from '../assets/requests';
 import ShowsMain from '../components/ShowsMain';
 import TvSection from '../components/TvSection';
 import Footer from '../components/Footer';

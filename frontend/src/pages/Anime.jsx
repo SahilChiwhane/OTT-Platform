@@ -2,7 +2,7 @@ import React from 'react';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import AnimeSection from '../components/AnimeSection';
-import requests from '../assets/Requests';
+import requests from '../assets/requests';
 
 const Anime = () => {
   return (
