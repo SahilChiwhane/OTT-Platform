@@ -1,11 +1,11 @@
-// src/routes/AppRoutes.js
 import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Loader from "../components/Loader";
-import Browse from '../pages/Browse';
-import Watchlist from '../pages/Watchlist';
 
-// Lazy loading other pages
+import Browse from '../pages/Browse';
+import Wishlist from "../pages/Wishlist"; // single import
+
+// Lazy load heavy pages
 const Home = lazy(() => import("../pages/Home"));
 const Movies = lazy(() => import("../pages/Movies"));
 const TvSeries = lazy(() => import("../pages/TvSeries"));
@@ -28,10 +28,9 @@ const AppRoutes = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/watch/:id" element={<Watch />} />
-        <Route path="/watchlist" element={<Watchlist />} />
-        <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/search" element={<Search />} />
-
+        
         {/* 404 fallback */}
         <Route path="*" element={<NotFound />} />
       </Routes>

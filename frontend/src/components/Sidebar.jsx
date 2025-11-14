@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import useWishlistCount from '../hooks/useWishlistCount';
 import {
   FaSearch,
   FaFilm,
@@ -13,17 +14,20 @@ import {
 } from 'react-icons/fa';
 
 const Sidebar = () => {
+  // collapsed by default as requested
+  const [collapsed, setCollapsed] = useState(true);
+  const [hovering, setHovering] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
-  const [hovering, setHovering] = useState(false);
+  const count = useWishlistCount(); // live-updating wishlist count
 
   const items = [
     { key: 'movies', label: 'Movies', to: '/movies', icon: <FaFilm /> },
     { key: 'tvshows', label: 'TV Shows', to: '/tvshows', icon: <FaTv /> },
     { key: 'anime', label: 'Anime', to: '/anime', icon: <FaFilm /> },
     { key: 'search', label: 'Search', to: null, icon: <FaSearch />, action: () => navigate('/search') },
-    { key: 'wishlist', label: 'Wishlist', to: '/watchlist', icon: <FaListAlt /> },
+    { key: 'wishlist', label: 'Wishlist', to: '/wishlist', icon: <FaListAlt /> },
     { key: 'settings', label: 'Settings', to: '/settings', icon: <FaCog /> },
     { key: 'help', label: 'Help', to: '/help', icon: <FaQuestionCircle /> },
   ];
@@ -35,15 +39,45 @@ const Sidebar = () => {
 
   const renderItem = (item) => {
     const active = isRouteActive(item.to);
-    const base = `flex items-center gap-3 p-3 rounded-md transition-all duration-200 ease-in-out relative`;
+    const base = `flex items-center gap-3 p-3 rounded-md transition-all duration-200 ease-in-out relative group`;
     const activeClasses = active ? `bg-[#1c1c1c] text-white` : `text-gray-300 hover:bg-[#1c1c1c]`;
+
+    // full badge shown when expanded
+    const expandedBadge = (
+      <span
+        className="ml-auto inline-flex items-center justify-center min-w-[22px] h-6 text-xs font-semibold rounded-full bg-red-600 text-white"
+        aria-hidden
+      >
+        {count > 99 ? '99+' : count}
+      </span>
+    );
+
+    // collapsed small badge/dot
+    const collapsedBadge = (
+      <span className="absolute right-2 top-1/2 transform -translate-y-1/2">
+        <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-red-600 text-white">
+          {count > 9 ? '•' : count === 0 ? '' : count}
+        </span>
+      </span>
+    );
 
     const content = (
       <>
         <span className="text-lg">{item.icon}</span>
+
+        {/* label only when expanded */}
         {!collapsed && <span className="sidebar--Font">{item.label}</span>}
 
-        {/* Tooltip shown only when collapsed */}
+        {/* Wishlist badges */}
+        {item.key === 'wishlist' && !collapsed && (
+          <span className="ml-auto">{expandedBadge}</span>
+        )}
+
+        {item.key === 'wishlist' && collapsed && count > 0 && (
+          collapsedBadge
+        )}
+
+        {/* Tooltip shown when collapsed */}
         {collapsed && (
           <span className="absolute left-full ml-3 whitespace-nowrap bg-[#1c1c1c] text-white text-sm px-2 py-1 rounded opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none z-50">
             {item.label}
@@ -52,22 +86,27 @@ const Sidebar = () => {
       </>
     );
 
-    return item.action ? (
-      <div
-        key={item.key}
-        onClick={item.action}
-        className={`${base} ${activeClasses} cursor-pointer ${collapsed ? 'justify-center group' : ''}`}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') item.action(); }}
-      >
-        {content}
-      </div>
-    ) : (
+    if (item.action) {
+      return (
+        <div
+          key={item.key}
+          onClick={item.action}
+          className={`${base} ${activeClasses} cursor-pointer ${collapsed ? 'justify-center' : ''}`}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') item.action(); }}
+          aria-label={item.label}
+        >
+          {content}
+        </div>
+      );
+    }
+
+    return (
       <Link
         key={item.key}
         to={item.to}
-        className={`${base} ${activeClasses} ${collapsed ? 'justify-center group' : ''}`}
+        className={`${base} ${activeClasses} ${collapsed ? 'justify-center' : ''}`}
         aria-current={active ? 'page' : undefined}
       >
         {content}
@@ -77,32 +116,32 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`bg-[#121212] h-full flex flex-col transition-all duration-400 ease-in-out ${collapsed ? 'w-15' : 'w-60'}`}
+      className={`bg-[#121212] h-full flex flex-col transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-60'}`}
       onMouseEnter={() => { if (collapsed) setHovering(true); }}
       onMouseLeave={() => { if (collapsed) setHovering(false); }}
     >
       {/* HEADER */}
       <div className="flex items-center justify-between p-3">
-        {/* LEFT SLOT: fixed size and position-relative; we stack logo + expand button here */}
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 relative flex items-center justify-center">
-            {/* Logo (always present visually unless replaced by button via opacity/scale) */}
+            {/* Logo (hidden when collapsed but hovering) */}
             <div
-              className={`absolute inset-0 flex items-center justify-center transition-all duration-250 ease-in-out transform
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-200 transform
                 ${collapsed && hovering ? 'opacity-0 scale-90 pointer-events-none' : 'opacity-100 scale-100'}
               `}
               aria-hidden={collapsed && hovering}
             >
-              <div className="w-10 h-10 bg-blue-600 flex items-center justify-center rounded-full text-white font-bold select-none">
-                S
+              <div className="w-10 h-10 bg-blue-600 flex items-center justify-center rounded-full text-white select-none">
+                <span className="font-bold">S</span>
+                <span className="font-light text-sm">24</span>
               </div>
             </div>
 
-            {/* Expand button (only visible when collapsed+hovering) - occupies same spot */}
+            {/* Expand button (visible when collapsed+hovering) */}
             <button
               onClick={() => setCollapsed(false)}
               aria-label="Expand sidebar"
-              className={`absolute inset-0 m-auto w-10 h-10 flex items-center justify-center rounded-full focus:outline-none transition-all duration-250 ease-in-out transform
+              className={`absolute inset-0 m-auto w-10 h-10 flex items-center justify-center rounded-full focus:outline-none transition-all duration-200 transform
                 ${collapsed && hovering ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}
               `}
             >
@@ -110,13 +149,13 @@ const Sidebar = () => {
             </button>
           </div>
 
-          {/* Site name only when expanded */}
+          {/* site name only when expanded */}
           {!collapsed && (
             <span className="text-white font-bold text-lg select-none">Stream24</span>
           )}
         </div>
 
-        {/* When expanded show collapse button on right aligned with same vertical center */}
+        {/* collapse button when expanded */}
         {!collapsed && (
           <div className="w-12 h-12 flex items-center justify-center">
             <button
@@ -131,18 +170,22 @@ const Sidebar = () => {
       </div>
 
       {/* NAV */}
-      <nav className="flex-1 flex flex-col gap-1 mt-2">{items.map(renderItem)}</nav>
+      <nav className="flex-1 flex flex-col gap-1 mt-2 px-1">
+        {items.map(renderItem)}
+      </nav>
 
       {/* ACCOUNT */}
-      <div className="mt-auto mb-4">
+      <div className="mt-auto mb-4 px-1">
         <div
           onClick={() => navigate('/profile')}
-          className={`flex items-center gap-3 p-3 text-gray-300 hover:bg-[#1c1c1c] rounded-md cursor-pointer transition-all duration-200 ease-in-out relative ${collapsed ? 'justify-center group' : ''}`}
+          className={`flex items-center gap-3 p-3 text-gray-300 hover:bg-[#1c1c1c] rounded-md cursor-pointer transition-all duration-200 ease-in-out ${collapsed ? 'justify-center group' : ''}`}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/profile'); }}
         >
           <FaUserCircle className="text-lg" />
           {!collapsed && <span className="sidebar--Font">Account</span>}
 
-          {/* Tooltip for account */}
           {collapsed && (
             <span className="absolute left-full ml-3 whitespace-nowrap bg-[#1c1c1c] text-white text-sm px-2 py-1 rounded opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none z-50">
               Account
